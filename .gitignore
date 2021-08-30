@@ -1,5 +1,7 @@
-results/
-uploaded-images/
+results/*
+uploaded-images/*
+!results/.gitkeep
+!uploaded-images/.gitkeep
 yolov5/
 __pycache__/
 .idea/
