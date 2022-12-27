@@ -41,7 +41,15 @@ class ProcessImageResource(object):
     resp.body = json.dumps(data)
     f.close()
 
+class ProcessTestEndpoint(object):
+  def __init__(self):
+    print("Process Test Endpoint initialized")
+
+  def on_get(self, req, resp):
+    print(req)
+    resp.body = json.dumps({"Hello": "wolrd"})
 
 app = application = falcon.App()
 companies_endpoint = ProcessImageResource()
 app.add_route('/upload-image', companies_endpoint)
+app.add_route('/test-endpoint', ProcessTestEndpoint())
