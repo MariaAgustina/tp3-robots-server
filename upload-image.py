@@ -1,6 +1,8 @@
 import falcon, json
 import base64
 import os, shutil
+import subprocess, sys
+
 
 class ProcessImageResource(object):
   def __init__(self):
@@ -33,23 +35,37 @@ class ProcessImageResource(object):
         decodeit.write(base64.b64decode((image)))
         decodeit.close()
 
-    os.system('python get_image_feature_vectors.py')
-    os.system('python cluster_image_feature_vectors.py')
+    os.system('python3 get_image_feature_vectors.py')
+    os.system('python3 cluster_image_feature_vectors.py')
 
     f = open('nearest_neighbors.json','rb')
     data = json.load(f)
     resp.body = json.dumps(data)
     f.close()
 
-class ProcessTestEndpoint(object):
+class ImagePredictor(object):
   def __init__(self):
-    print("Process Test Endpoint initialized")
+    print("Process Image Predictor initialized")
 
-  def on_get(self, req, resp):
-    print(req)
-    resp.body = json.dumps({"Hello": "wolrd"})
+  def on_post(self, req, resp):
+    input_image_json = req.media
+    image = input_image_json["image"]
+    image_id = input_image_json["id"]
+
+    if(image_id):
+        image_dir = "uploaded-images/{}.png".format(image_id)
+
+        decodeit = open(image_dir, 'wb')
+        decodeit.write(base64.b64decode((image)))
+        decodeit.close()
+
+        subprocess.run(['python3', '../yolov5/detect.py','--weights','best-640.pt','--img-size','640','--conf','0.2','--source',image_dir])
+
+    resp.body = json.dumps({"prediction": "cartera cuero negra"})
+
 
 app = application = falcon.App()
 companies_endpoint = ProcessImageResource()
-app.add_route('/upload-image', companies_endpoint)
-app.add_route('/test-endpoint', ProcessTestEndpoint())
+app.add_route('/similar-image', companies_endpoint)
+image_predictor_endpoint = ImagePredictor()
+app.add_route('/predict-image', image_predictor_endpoint)
