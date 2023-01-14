@@ -2,11 +2,13 @@ import falcon, json
 import base64
 import os, shutil
 import subprocess, sys
+import GetColor
 
 
 class ProcessImageResource(object):
   def __init__(self):
     print("Server initialized")
+    GetColor.ImageProcessor().processColor()
 
   def removeContents(self,folder):
     for filename in os.listdir(folder):
@@ -48,6 +50,7 @@ class ImagePredictor(object):
     print("Process Image Predictor initialized")
 
   def on_post(self, req, resp):
+    print("Started prediction")
     input_image_json = req.media
     image = input_image_json["image"]
     image_id = input_image_json["id"]
@@ -59,8 +62,7 @@ class ImagePredictor(object):
         decodeit.write(base64.b64decode((image)))
         decodeit.close()
 
-        subprocess.run(['python3', '../yolov5/detect.py','--weights','best-640.pt','--img-size','640','--conf','0.2','--source',image_dir])
-
+        subprocess.run(['python3', '../yolov5/detect.py','--weights','best-640.pt','--img-size','640','--conf','0.2','--source',image_dir,'--save-crop'])
     resp.body = json.dumps({"prediction": "cartera cuero negra"})
 
 
