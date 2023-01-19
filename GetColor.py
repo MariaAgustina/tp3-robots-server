@@ -9,8 +9,9 @@ class ImageProcessor(object):
         self.colors = []
         self.selectedColor = Color((0,0,0),0)
 
-    def processColor(self):
-        input_name = '/Users/mariaagustinamarkosich/Documents/Facultad/Robots/TP3/yolov5/runs/detect/exp/crops/cartera/prediction_image_2.jpg'
+    def processColor(self,predictionID):
+        # TODO: define yolo path and replace
+        input_name = '../yolov5/runs/detect/' + predictionID + '/crops/cartera/prediction_image.jpg'
         colors_x = extcolors.extract_from_path(input_name, tolerance=10, limit=10)
         #Example result colors_x:
         #Total result:

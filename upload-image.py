@@ -2,13 +2,14 @@ import falcon, json
 import base64
 import os, shutil
 import subprocess, sys
-import GetColor
-
+from GetColor import ImageProcessor
+from datetime import datetime
+import time
+import PredictionResult
 
 class ProcessImageResource(object):
   def __init__(self):
     print("Server initialized")
-    GetColor.ImageProcessor().processColor()
 
   def removeContents(self,folder):
     for filename in os.listdir(folder):
@@ -62,8 +63,50 @@ class ImagePredictor(object):
         decodeit.write(base64.b64decode((image)))
         decodeit.close()
 
-        subprocess.run(['python3', '../yolov5/detect.py','--weights','best-640.pt','--img-size','640','--conf','0.2','--source',image_dir,'--save-crop'])
-    resp.body = json.dumps({"prediction": "cartera cuero negra"})
+        dt = datetime.now()
+        predictionID = str(time.mktime(dt.timetuple()) + dt.microsecond / 1e6).replace(".","")
+        # TODO: define yolo path and replace
+        # TODO: run the two process at the same time
+        subprocess.run(
+          ['python3',
+           '../yolov5/detect.py',
+           '--weights',
+           'best-640.pt',
+           '--img-size','640',
+           '--conf','0.2',
+           '--source',
+           image_dir,
+           '--save-crop',
+           '--save-conf',
+           '--save-txt',
+           '--name',
+           predictionID
+           ]
+        )
+        pathTextura = predictionID + "-textura"
+        subprocess.run(
+            ['python3',
+             '../yolov5/detect.py',
+             '--weights',
+             'best-texturas-mezcladas-640.pt',
+             '--img-size','640',
+             '--conf','0.2',
+             '--source',
+             image_dir,
+             '--name',
+             pathTextura,
+             '--save-txt',
+             '--save-conf'
+             ])
+        resultTextura = PredictionResult.PredictionResult(pathTextura)
+        resultTextura.print()
+        imageProcessor = ImageProcessor()
+        imageProcessor.processColor(predictionID)
+
+
+    resp.body = json.dumps(
+        {"prediction": "cartera " + resultTextura.texturaTranslation + " " + imageProcessor.selectedColor.translation }
+    )
 
 
 app = application = falcon.App()
