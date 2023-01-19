@@ -50,13 +50,26 @@ class Color(object):
 
     def closest_colour(self, requested_colour):
         min_colours = {}
-        for key, name in webcolors.CSS3_HEX_TO_NAMES.items():
-            r_c, g_c, b_c = webcolors.hex_to_rgb(key)
+        for key, name in self.customColors():
+            r_c, g_c, b_c = self.custom_hex_to_rgb(key)
             rd = (r_c - requested_colour[0]) ** 2
             gd = (g_c - requested_colour[1]) ** 2
             bd = (b_c - requested_colour[2]) ** 2
             min_colours[(rd + gd + bd)] = name
         return min_colours[min(min_colours.keys())]
+
+    def customColors(self):
+        #[('#f0f8ff', 'aliceblue'), ('#faebd7', 'antiquewhite')...]
+        customColors = list(webcolors.CSS3_HEX_TO_NAMES.items())
+        customColors.append(("#906d51","marron_1"))
+        return customColors
+
+    def custom_hex_to_rgb(self, key):
+        try:
+            rgb = webcolors.hex_to_rgb(key)
+        except ValueError:
+            rgb = ColorTranslator.ColorTranslator().custom_rgb(key)
+        return rgb
 
     def get_colour_name(self, requested_colour):
         try:
