@@ -1,4 +1,4 @@
-# pip install -r requirements.txt
+# pip3 install -r requirements.txt
 
 # base ----------------------------------------
 opencv-python>=4.1.2
@@ -7,3 +7,4 @@ tensorflow-hub
 annoy
 extcolors
 webcolors
+urllib3

@@ -59,7 +59,7 @@ def match_id(filename):
 # Stores image similarity scores with productID in a json file
 #################################################
 def cluster():
-    image_similarity_search = "input_product"
+    image_similarity_search = "prediction_image"
     start_time = time.time()
 
     print("---------------------------------")
@@ -150,6 +150,7 @@ def cluster():
     print ("Step.2 - Similarity score calculation - Finished ")
 
     # Writes the 'named_nearest_neighbors' to a json file
+    print(named_nearest_neighbors)
     with open('nearest_neighbors.json', 'w') as out:
         json.dump(named_nearest_neighbors, out)
 
