@@ -61,7 +61,7 @@ class ImagePredictor(object):
             ['python3',
              '../yolov5/detect.py',
              '--weights',
-             'best-texturas-mezcladas-640.pt',
+             'best-texturas-mezcladas-640-new.pt',
              '--img-size','640',
              '--conf','0.2',
              '--source',
